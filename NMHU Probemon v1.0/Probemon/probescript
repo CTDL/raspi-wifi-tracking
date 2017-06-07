@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sleep 20
+sudo ifconfig wlan1 down
+sleep 10
+sudo iwconfig wlan1 mode monitor
+sleep 10
+sudo ifconfig wlan1 up
+sleep 10
+sudo python3 /home/pi/Probemon/probemon.py

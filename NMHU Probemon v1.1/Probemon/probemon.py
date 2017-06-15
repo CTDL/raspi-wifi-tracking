@@ -60,6 +60,7 @@ from pr_config import (
         close_time_h,
         close_time_m,
         power_off_toggle,
+        send_toggle,
         sending_email,
         sending_pass,
         receiving_email,
@@ -75,6 +76,7 @@ EMAIL_FROM = sending_email
 EMAIL_PASS = sending_pass
 EMAIL_TO = receiving_email
 DB_IP = database_IP
+DATA_SEND_METHOD = send_toggle
 
 
 time.sleep(20) #give the program 20 seconds for wireless to connect
@@ -119,8 +121,8 @@ def build_packet_callback(time_fmt, logger, delimiter, mac_info, ssid, rssi):
                 fields.append(log_time)
 
                 # append the mac address itself
-                #fields.append(packet.addr2)
-                fields.append("MAC") #Changed for security
+                fields.append(packet.addr2)
+                #fields.append("MAC") #Change to this line for better security
 
                 # parse mac address and look up the organization from the vendor octets
                 if mac_info:
@@ -393,16 +395,16 @@ def wereOpen():
         global stopReading
         #set global tag to false if the business should be open
         if stopReading == True:
-                stopReading = false
+                stopReading = False
 
 
 #function deals with what to do when the business closes.
 #What function it performs is dependant on the POWER_OFF variable.
 def wereClosed():
         global stopReading
-        #switchMode('managed')   #mode switching only needed for RPi2!
-        #sendEmail()     #send email to client directly
-        sendToDB(DB_IP)  #send email to client via database
+        if stopReading == False:
+                sendData()
+                
         
         #Turn off pi
         if POWER_OFF == 0:
@@ -412,6 +414,13 @@ def wereClosed():
         elif POWER_OFF == 1:
                 stopReading = True
 
+#function sends data to the client, either via its built in method, or via a database connection
+def sendData():
+        if DATA_SEND_METHOD == 0:
+                sendEmail()     #send email to client directly
+        elif DATA_SEND_METHOD == 1:
+                sendToDB(DB_IP)  #send email to client via database
+                
 #function sends an email to specified address, from a specified gmail address: both in config file.
 #function also renames file; both removing the NS flag (to show that the file has been sent) and also
 #renaming the file to CSV format for client use.
@@ -499,6 +508,10 @@ def sendToDB(dBIP):
         newNameWithPath = "/home/pi/Probemon/logs/"+str(getDate())+".txt"       #rename .txt file. Note that this doesnt change extension!
         osString = "sudo mv %s %s"  % (oldNameWithPath, newNameWithPath)        #rename old file to new file name
         os.system(osString)
+
+#FOR DEBUGGING PURPOSES ONLY
+#switch modes on boot of program for testing
+#switchMode('monitor')
                 
 def main():
         parser = argparse.ArgumentParser(description=DESCRIPTION)

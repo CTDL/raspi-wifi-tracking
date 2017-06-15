@@ -24,9 +24,26 @@ Then, once the pi is on the network, go to the command line to enter commands:
 	sudo pip3 install netaddr (install netaddr)
 	sudo pip3 install scapy-python3 (install scapy)
 
+
+That's it! Next is to take a look in the pr_config.py file to see what sort of settings you can change. Note that anything preceded by a # is a comment! the changeable settings are the lines WITHOUT # marks!
+
+Want to see the program run in live feed mode? use the following commands from the command line:
+
+(switch our dongle to monitor mode)
+sudo ifconfig wlan1 down
+sudo iwconfig wlan1 mode monitor (be sure to use iwconfig here instead of ifconfig!)
+sudo ifconfig wlan1 up
+(run the program in listing mode with manufacturers shown)
+sudo python3 /home/pi/Probemon/probemon.py -l -f
+
+Some extra setup for optional features:
+
 (if using a database)
 	sudo python3.4 -m pip install --upgrade pip (update pip)
 	sudo python3.4 -m pip install --upgrade wheel setuptools requests (use pip to install libraries)
+
+(setting probescript to run  as an executable file)
+	sudo chmod u+x probescript
 
 (setting the program to run automatically using systemd)
 	sudo nano /lib/systemd/system/probescript.service (create script file to autorun probemon)
@@ -54,7 +71,7 @@ Then, once the pi is on the network, go to the command line to enter commands:
 	sudo systemctl daemon-reload
 	sudo systemctl enable probescript.service
 
-- optional: set pi to turn itself off every day at a certain time
+(optional: set pi to turn itself off every day at a certain time)
 	(from the command line, open crontab)
 	crontab -e
 	(in crontab, move cursor to the bottom and enter the following:)

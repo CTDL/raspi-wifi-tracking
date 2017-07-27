@@ -1,0 +1,83 @@
+****NOTE THAT THIS PROJECT IS EXPECTED TO BE INSTALLED ON A RASPBERRY PI 3!****
+
+Instructions for setting up the NMHU Probemon File:
+
+First, connect to your local network- this can be done from the desktop via clicking
+the upper right corner symbol for network, or from the command line for more experienced users.
+
+Make sure all of your regular pi settings are what you want (example: enabling or disabling SSH)
+
+
+INSTALLATION STEPS:
+
+Copy the 'Probemon' folder from this directory to the /home/pi directory on your pi (via USB stick or however you want to move it)
+
+Then, once the pi is on the network, go to the command line to enter commands:
+(instructions and notes are in parenthesis- don't type these in)
+
+	sudo apt-get update (update for getting upcoming files)
+
+(For the packet sniffer)
+	sudo apt-get install tshark (install tshark sniffer)
+	sudo apt-get install tcpdump (install/update tcpdump)
+	sudo pip install -U pip (upgrade existing pip inclusion)
+	sudo pip3 install netaddr (install netaddr)
+	sudo pip3 install scapy-python3 (install scapy)
+
+
+That's it! Next is to take a look in the pr_config.py file to see what sort of settings you can change. Note that anything preceded by a # is a comment! the changeable settings are the lines WITHOUT # marks!
+
+Want to see the program run in live feed mode? use the following commands from the command line:
+
+(switch our dongle to monitor mode)
+sudo ifconfig wlan1 down
+sudo iwconfig wlan1 mode monitor (be sure to use iwconfig here instead of ifconfig!)
+sudo ifconfig wlan1 up
+(run the program in listing mode with manufacturers shown)
+sudo python3 /home/pi/Probemon/probemon.py -l -f
+
+Some extra setup for optional features:
+
+(if using a database)
+	sudo python3.4 -m pip install --upgrade pip (update pip)
+	sudo python3.4 -m pip install --upgrade wheel setuptools requests (use pip to install libraries)
+
+(setting probescript to run  as an executable file)
+	sudo chmod u+x probescript
+
+(setting the program to run automatically using systemd)
+	sudo nano /lib/systemd/system/probescript.service (create script file to autorun probemon)
+		
+	(type the following into the empty screen in console)
+
+		[Unit]
+		Description=Probemon Startup Service
+		After=multi-user.target
+
+		[Service]
+		Type=idle
+		ExecStart=/home/pi/Probemon/probescript
+
+		[Install]
+		WantedBy=multi-user.target
+
+
+	(save with CRTL-X, Y, Enter)
+	(set user permissions)
+	sudo chmod 644 /lib/systemd/system/probescript.service
+	sudo chmod 755 /home/pi/Probemon/probescript
+
+	(enable service)
+	sudo systemctl daemon-reload
+	sudo systemctl enable probescript.service
+
+(optional: set pi to turn itself off every day at a certain time)
+	(from the command line, open crontab)
+	crontab -e
+	(in crontab, move cursor to the bottom and enter the following:)
+	0 20 * * * sudo poweroff
+	(This sets the pi to turn itself off at 8:00 pm every day as a precaution)
+	(you can use a different time- just remember it uses 24 hour periods, and the format is:)
+	(min hour * * * command)
+
+	(CTRL+X, then Y, then enter to save)

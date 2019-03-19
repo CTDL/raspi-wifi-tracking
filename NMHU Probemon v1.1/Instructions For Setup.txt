@@ -5,7 +5,7 @@ Instructions for setting up the NMHU Probemon File:
 First, connect to your local network- this can be done from the desktop via clicking
 the upper right corner symbol for network, or from the command line for more experienced users.
 
-sudo raspi-config or use startX to get to the GUI
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf or use startX to get to the GUI
 
 Make sure all of your regular pi settings are what you want (example: enabling or disabling SSH)
 
